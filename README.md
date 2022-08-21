@@ -1,38 +1,40 @@
 mtik00.desk
 ===========
 
-A brief description of the role goes here.
+Install and configure the (https://github.com/jamesob/desk)[desk] CLI tool.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role has no requirements other than ansible.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Varables are defined in `default.main.yml`:
+* `apt_cache_valid_time`: How long the apt cache is valid for (needed to install `git`)
+* `binary_dir`: The directory to place a symlink to the `desk` binary
+* `binary_dir_mode`: The mode to apply to `binary_dir`
+* `clone_dir`: The directory in which to clone the `desk` repository
+* `update_desk_clone`: Whether or not to update the cloned folder
+* `desk_version`: The `git` tag of the Desk repo to clone
+* `install_completions_zsh`: Whether or not to install auto-completions into zsh
+* `install_completions_oh_my_zsh`: Whether or not to install auto-completions into oh-my-zsh
+* `install_completions_bash`: Whether or not to install auto-completions into bash
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role has no dependencies.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
     - hosts: servers
       roles:
-         - { role: mtik00.desk, x: 42 }
+         - { role: mtik00.desk, install_completions_oh_my_zsh: true }
 
 License
 -------
 
 MIT
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).

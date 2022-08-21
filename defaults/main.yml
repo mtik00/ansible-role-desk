@@ -1,1 +1,13 @@
 ---
+apt_cache_valid_time: 3600
+
+binary_dir: "{{ ansible_user_dir }}/bin"
+binary_dir_mode: "0700"
+
+clone_dir: "{{ ansible_user_dir }}/.desk-repo"
+update_desk_clone: false
+desk_version: v0.6.0
+
+install_completions_zsh: false
+install_completions_oh_my_zsh: false
+install_completions_bash: false

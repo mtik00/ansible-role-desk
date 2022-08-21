@@ -1,1 +1,78 @@
 ---
+
+- name: git package
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+    name:
+      - git
+
+- name: Clone the desk repo
+  ansible.builtin.git:
+    repo: "https://github.com/jamesob/desk.git"
+    dest: "{{ clone_dir }}"
+    update: "{{ update_desk_clone }}"
+    version: "{{ desk_version }}"
+
+- name: Ensure binary directory exists
+  ansible.builtin.file:
+    path: "{{ binary_dir }}"
+    state: directory
+    mode: "{{ binary_dir_mode }}"
+
+- name: symlink the desk binary
+  ansible.builtin.file:
+    state: link
+    src: "{{ clone_dir }}/desk"
+    path: "{{ binary_dir }}/desk"
+    mode: "0755"
+
+- name: Create the desk config folder
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.desks"
+    state: directory
+    mode: "0755"
+
+- name: install oh-my-zsh autocomplete
+  block:
+    - name: check oh-my-zsh folder
+      ansible.builtin.stat:
+        path: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins"
+      register: omz_plugins
+
+    - name: run make
+      ansible.builtin.command: make oh-my-zsh
+      args:
+        chdir: "{{ clone_dir }}"
+      when: omz_plugins.stat.exists
+  when: install_completions_oh_my_zsh
+
+- name: install bash completions
+  block:
+    - name: test .bashrc
+      ansible.builtin.stat:
+        path: "{{ ansible_user_dir }}/.bashrc"
+      register: bashrc
+
+    - name: insert source into .bashrc
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_user_dir }}/.bashrc"
+        line: 'source {{ clone_dir }}/shell_plugins/bash/desk'
+      when:
+        - bashrc.stat.exists
+  when: install_completions_bash
+
+- name: install zsh completions
+  block:
+    - name: test .zshrc
+      ansible.builtin.stat:
+        path: "{{ ansible_user_dir }}/.zshrc"
+      register: zshrc
+
+    - name: insert into .zshrc
+      ansible.builtin.lineinfile:
+        path: "{{ ansible_user_dir }}/.zshrc"
+        line: 'fpath=({{ clone_dir }}/shell_plugins/zsh $fpath)'
+      when:
+        - zshrc.stat.exists
+  when: install_completions_zsh
