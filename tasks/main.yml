@@ -40,10 +40,12 @@
         path: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins"
       register: omz_plugins
 
-    - name: run make
-      ansible.builtin.command: make oh-my-zsh
-      args:
-        chdir: "{{ clone_dir }}"
+    - name: symlink oh-my-zsh completions
+      ansible.builtin.file:
+        state: link
+        src: "{{ clone_dir }}/shell_plugins/zsh"
+        path: "{{ ansible_user_dir }}/.oh-my-zsh/custom/plugins/desk"
+        mode: "0755"
       when: omz_plugins.stat.exists
   when: install_completions_oh_my_zsh
 
